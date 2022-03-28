@@ -1,15 +1,14 @@
-package com.kinandcarta.permissionmanager.ui.recyclerview
+package com.meraki.sm.ui.recyclerview
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.kinandcarta.permissionmanager.databinding.RecycleviewItemBinding
-import com.kinandcarta.permissionmanager.permissions.Permission
+import com.meraki.sm.databinding.RecycleviewItemBinding
+import com.meraki.sm.permissions.PermissionModel
 
 class PermissionViewAdapter(
-    private  val context: Context,
-    private val permissionList: MutableList<Permission> = mutableListOf()
+    val permissions: MutableList<PermissionModel> = mutableListOf(),
+    private val callback: (PermissionModel) -> Unit = {}
 ) : RecyclerView.Adapter<PermissionViewAdapter.PermissionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PermissionViewHolder {
@@ -20,13 +19,16 @@ class PermissionViewAdapter(
     }
 
     override fun onBindViewHolder(holder: PermissionViewHolder, position: Int) {
-        val permission  = permissionList[position]
-        holder.binding.permissionname.text = permission.permissions[0].name
-        holder.binding.permissionStatus.text = context.getString(permission.permissions[0].status.value)
+        val permission  = permissions[position]
+        holder.binding.apply {
+            permissionName.text = root.context.getString(permission.displayLabelId)
+            permissionStatus.text = root.context.getString(permission.status.value)
+            enablePermissionButton.setOnClickListener { callback(permission) }
+        }
     }
 
     override fun getItemCount(): Int {
-        return permissionList.size
+        return permissions.size
     }
 
     inner class PermissionViewHolder(binding: RecycleviewItemBinding) :

@@ -1,8 +1,8 @@
-package com.kinandcarta.permissionmanager
+package com.meraki.sm
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.kinandcarta.permissionmanager.ui.main.MainFragment
+import com.meraki.sm.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 

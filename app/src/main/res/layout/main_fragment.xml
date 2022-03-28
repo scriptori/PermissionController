@@ -9,23 +9,24 @@
     tools:context=".ui.main.MainFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/permissionRecyclerView"
+        android:id="@+id/permission_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_margin="10dp" />
+        android:layout_margin="10dp"
+        />
 
     <Button
-        android:id="@+id/everything"
+        android:id="@+id/start_enrollment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Request All Permissions" />
+        android:text="@string/start_enrollment_button_text" />
 
     <Button
-        android:id="@+id/clear"
+        android:id="@+id/clear_permissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Clear permissions" />
+        android:text="@string/clear_permissions_button_text" />
 </LinearLayout>

@@ -1,9 +1,21 @@
 <resources>
-    <string name="app_name">PermissionManager</string>
+    <string name="app_name">Permission Controller</string>
     <string name="dialog_permission_title">Permission required</string>
     <string name="dialog_permission_default_message">Default message</string>
     <string name="dialog_permission_button_positive">OK</string>
     <string name="permission_status_denied">Denied</string>
     <string name="permission_status_granted">Granted</string>
-    <string name="permission_status_undefined">Undefined</string>
+    <string name="access_camera_permission">Access camera permission</string>
+    <string name="read_phone_number_permission">Read phone numbers permission</string>
+    <string name="read_phone_state_permission">Read phone state permission</string>
+    <string name="read_sms_permission">Read SMS permission</string>
+    <string name="access_fine_location_permission">Access fine location permission</string>
+    <string name="access_coarse_location">Access coarse location permission</string>
+    <string name="write_external_storage">Write external storage permission</string>
+    <string name="read_external_storage">Read external storage permission</string>
+    <string name="system_manager_permission_rationale">System Manager requires some permissions to perform enrollment.</string>
+    <string name="start_enrollment_button_text">Start Enrollment</string>
+    <string name="clear_permissions_button_text">Clear permissions</string>
+    <string name="access_camera_permission_rationale">System Manager needs permission to access the camera</string>
+    <string name="default_permission_rationale">System Manager needs this permission for enrollment.</string>
 </resources>
