@@ -7,15 +7,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.meraki.sm.R
 import com.meraki.sm.databinding.MainFragmentBinding
 import com.meraki.sm.permissions.PermissionController
 import com.meraki.sm.permissions.PermissionListViewModel
 import com.meraki.sm.permissions.PermissionModel
-import com.meraki.sm.permissions.deniedPermissions
+import com.meraki.sm.permissions.PermissionStatus.DENIED
+import com.meraki.sm.permissions.PermissionStatus.GRANTED
 import com.meraki.sm.ui.recyclerview.PermissionViewAdapter
 import timber.log.Timber
 
@@ -24,59 +25,73 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private val permissionManager = PermissionController.from(this)
-
     private val binding by lazy { MainFragmentBinding.inflate(layoutInflater) }
     private val adapter = PermissionViewAdapter(callback = ::requestSinglePermission)
     private val permissionListViewModel: PermissionListViewModel by lazy { PermissionListViewModel() }
+    private val permissionController = PermissionController.from(this, permissionListViewModel)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = binding.root
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Start observing the permission list view model
-        permissionListViewModel.permissionList.observe(viewLifecycleOwner, Observer {
-            adapter.apply {
-                permissionManager.updateRequiredPermissionsStatus()
-                permissions.clear()
-                permissions.addAll(deniedPermissions)
-                notifyDataSetChanged()
-            }
-        })
+        permissionListViewModel.permissionList.observe(viewLifecycleOwner, Observer { updateData() })
+
         binding.apply {
             permissionRecyclerView.also { rv ->
                 rv.layoutManager = LinearLayoutManager(root.context)
                 rv.adapter = adapter
             }
-            startEnrollment.setOnClickListener { checkPermissions() }
+            startEnrollment.apply {
+                isEnabled = permissionController.areAllPermissionsGranted(root.context)
+                setOnClickListener {
+                    Toast.makeText(binding.root.context, "Initiating enrollment...", Toast.LENGTH_LONG).show()
+                }
+            }
             clearPermissions.setOnClickListener {
                 val manager = root.context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
                 manager.clearApplicationUserData()
             }
         }
+
+        permissionController.checkPermissions { handleResults(it) }
+
+        permissionListViewModel.permissionList.value = permissionListViewModel.getDeniedPermissions()
     }
 
-    private fun checkPermissions() {
-        permissionManager
-            .rationale(getString(R.string.system_manager_permission_rationale))
-            .checkPermissions { handleResults(it) }
+    override fun onResume() {
+        super.onResume()
+        updateDeniedList()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateData() {
+        adapter.apply {
+            permissionController.updateRequiredPermissionsStatus()
+            permissions.clear()
+            permissions.addAll(permissionListViewModel.getDeniedPermissions())
+            notifyDataSetChanged()
+        }
+        binding.startEnrollment.isEnabled = permissionController.areAllPermissionsGranted(requireContext())
     }
 
     private fun requestSinglePermission(permission: PermissionModel) {
-        permissionManager
-            .rationale(getString(permission.rationaleId))
-            .request(permission) { handleResults(it) }
+        permissionController.requestSinglePermission(permission) { handleResults(it) }
     }
 
-    private fun handleResults(result: Map<String, Boolean>) {
-        result.forEach { entry ->
-            Timber.d("entry: $entry")
+    private fun handleResults(results: Map<String, Boolean>) {
+        results.forEach { (p, r) ->
+            Timber.d("The $p permission has been ${if (r) getString(GRANTED.value) else getString(DENIED.value)}")
         }
-        permissionManager.updateRequiredPermissionsStatus()
-        permissionListViewModel.permissionList.value = deniedPermissions
+        updateDeniedList()
+    }
+
+    private fun updateDeniedList() {
+        permissionController.updateRequiredPermissionsStatus()
+        val deniedPermission = permissionListViewModel.getDeniedPermissions()
+        permissionListViewModel.permissionList.value = deniedPermission
     }
 }

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.meraki.sm.databinding.RecycleviewItemBinding
 import com.meraki.sm.permissions.PermissionModel
+import timber.log.Timber
 
 class PermissionViewAdapter(
     val permissions: MutableList<PermissionModel> = mutableListOf(),
@@ -23,7 +24,10 @@ class PermissionViewAdapter(
         holder.binding.apply {
             permissionName.text = root.context.getString(permission.displayLabelId)
             permissionStatus.text = root.context.getString(permission.status.value)
-            enablePermissionButton.setOnClickListener { callback(permission) }
+            enablePermissionButton.setOnClickListener {
+                Timber.d("Enable ${permission.name} invoked!")
+                callback(permission)
+            }
         }
     }
 

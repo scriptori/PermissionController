@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "PermissionManager"
+rootProject.name = "PermissionController"

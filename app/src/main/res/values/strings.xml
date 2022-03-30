@@ -1,19 +1,18 @@
 <resources>
     <string name="app_name">Permission Controller</string>
-    <string name="dialog_permission_title">Permission required</string>
-    <string name="dialog_permission_default_message">Default message</string>
+    <string name="dialog_permission_title">Required Permissions</string>
+    <string name="dialog_permission_default_message">
+        System Manager requires the following permissions to perform enrollment:\n%1$s
+    </string>
     <string name="dialog_permission_button_positive">OK</string>
+    <string name="dialog_permission_button_negative">Cancel</string>
     <string name="permission_status_denied">Denied</string>
     <string name="permission_status_granted">Granted</string>
-    <string name="access_camera_permission">Access camera permission</string>
-    <string name="read_phone_number_permission">Read phone numbers permission</string>
-    <string name="read_phone_state_permission">Read phone state permission</string>
-    <string name="read_sms_permission">Read SMS permission</string>
-    <string name="access_fine_location_permission">Access fine location permission</string>
-    <string name="access_coarse_location">Access coarse location permission</string>
-    <string name="write_external_storage">Write external storage permission</string>
-    <string name="read_external_storage">Read external storage permission</string>
-    <string name="system_manager_permission_rationale">System Manager requires some permissions to perform enrollment.</string>
+    <string name="camera_permission_label">Camera permission</string>
+    <string name="phone_permission_label">Phone permission</string>
+    <string name="sms_permission_label">SMS permission</string>
+    <string name="location_permission_label">Location permission</string>
+    <string name="file_and_media_permission_label">File and Media permission</string>
     <string name="start_enrollment_button_text">Start Enrollment</string>
     <string name="clear_permissions_button_text">Clear permissions</string>
     <string name="access_camera_permission_rationale">System Manager needs permission to access the camera</string>
