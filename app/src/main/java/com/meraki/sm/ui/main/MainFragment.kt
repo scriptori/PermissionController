@@ -14,11 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.meraki.sm.databinding.MainFragmentBinding
 import com.meraki.sm.permissions.PermissionController
 import com.meraki.sm.permissions.PermissionListViewModel
-import com.meraki.sm.permissions.PermissionModel
-import com.meraki.sm.permissions.PermissionStatus.DENIED
-import com.meraki.sm.permissions.PermissionStatus.GRANTED
 import com.meraki.sm.ui.recyclerview.PermissionViewAdapter
-import timber.log.Timber
 
 class MainFragment : Fragment() {
     companion object {
@@ -26,14 +22,12 @@ class MainFragment : Fragment() {
     }
 
     private val binding by lazy { MainFragmentBinding.inflate(layoutInflater) }
-    private val adapter = PermissionViewAdapter(callback = ::requestSinglePermission)
     private val permissionListViewModel: PermissionListViewModel by lazy { PermissionListViewModel() }
     private val permissionController = PermissionController.from(this, permissionListViewModel)
+    private val adapter = PermissionViewAdapter(callback = permissionController::requestMissingPermission)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) = binding.root
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        binding.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,14 +51,13 @@ class MainFragment : Fragment() {
             }
         }
 
-        permissionController.checkPermissions { handleResults(it) }
-
-        permissionListViewModel.permissionList.value = permissionListViewModel.getDeniedPermissions()
+        permissionController.checkPermissions()
+        permissionController.updateMissingRequiredList()
     }
 
     override fun onResume() {
         super.onResume()
-        updateDeniedList()
+        permissionController.updateMissingRequiredList()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -76,22 +69,5 @@ class MainFragment : Fragment() {
             notifyDataSetChanged()
         }
         binding.startEnrollment.isEnabled = permissionController.areAllPermissionsGranted(requireContext())
-    }
-
-    private fun requestSinglePermission(permission: PermissionModel) {
-        permissionController.requestSinglePermission(permission) { handleResults(it) }
-    }
-
-    private fun handleResults(results: Map<String, Boolean>) {
-        results.forEach { (p, r) ->
-            Timber.d("The $p permission has been ${if (r) getString(GRANTED.value) else getString(DENIED.value)}")
-        }
-        updateDeniedList()
-    }
-
-    private fun updateDeniedList() {
-        permissionController.updateRequiredPermissionsStatus()
-        val deniedPermission = permissionListViewModel.getDeniedPermissions()
-        permissionListViewModel.permissionList.value = deniedPermission
     }
 }

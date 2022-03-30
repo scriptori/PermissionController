@@ -50,14 +50,13 @@ class PermissionListViewModel : ViewModel() {
             )
         )
     )
-
     val requiredPermission: List<PermissionModel> by lazy {
         _requiredPermissions.filter { it.condition }
     }
 
+    val requiredPermissionStrings = requiredPermission.map { it.permissions }.flatten().toTypedArray()
+
     fun getDeniedPermissions(): MutableList<PermissionModel> = requiredPermission.filter {
         it.status == PermissionStatus.DENIED
     }.toMutableList()
-
-    val requiredPermissionStrings = requiredPermission.map { it.permissions }.flatten().toTypedArray()
 }

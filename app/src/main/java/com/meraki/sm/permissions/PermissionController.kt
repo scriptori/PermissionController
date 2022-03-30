@@ -9,6 +9,7 @@ import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.fragment.app.Fragment
 import com.meraki.sm.R
+import timber.log.Timber
 import java.lang.StringBuilder
 import java.lang.ref.WeakReference
 
@@ -25,12 +26,25 @@ class PermissionController private constructor(
     private var callback: (Boolean) -> Unit = {}
     private var detailedCallback: (Map<String, Boolean>) -> Unit = {}
 
-    private val permissionCheck =
-        fragment.get()?.registerForActivityResult(RequestMultiplePermissions()) { grantResults ->
-            sendResultAndCleanUp(grantResults)
+    private val permissionCheck = fragment.get()?.registerForActivityResult(RequestMultiplePermissions()) { results ->
+            sendResultAndCleanUp(results)
         }
 
-    fun requestSinglePermission(permission: PermissionModel, callback: (Map<String, Boolean>) -> Unit) {
+    fun areAllPermissionsGranted(context: Context) =
+        viewModel.requiredPermission.all { it.areGranted(context) }
+
+    fun checkPermissions(callback: (Map<String, Boolean>) -> Unit = { handleResults(it) }) {
+        fragment.get()?.let { fragment ->
+            this.detailedCallback = callback
+            when {
+                areAllPermissionsGranted(fragment.requireContext()) -> sendPositiveResult()
+                shouldShowPermissionRationale(fragment) -> displayRationale(fragment, ::requestPermissions)
+                else -> requestPermissions()
+            }
+        }
+    }
+
+    fun requestMissingPermission(permission: PermissionModel) {
         fragment.get()?.let { fragment ->
             when {
                 hasPermissions(fragment.requireContext(), permission.permissions) ->
@@ -45,6 +59,11 @@ class PermissionController private constructor(
         }
     }
 
+    fun updateMissingRequiredList() {
+        updateRequiredPermissionsStatus()
+        viewModel.permissionList.value = viewModel.getDeniedPermissions()
+    }
+
     fun updateRequiredPermissionsStatus() {
         fragment.get()?.let { fragment ->
             viewModel.requiredPermission.forEach { permission ->
@@ -53,15 +72,14 @@ class PermissionController private constructor(
         }
     }
 
-    fun checkPermissions(callback: (Map<String, Boolean>) -> Unit) {
-        fragment.get()?.let { fragment ->
-            this.detailedCallback = callback
-            when {
-                areAllPermissionsGranted(fragment.requireContext()) -> sendPositiveResult()
-                shouldShowPermissionRationale(fragment) -> displayRationale(fragment, ::requestPermissions)
-                else -> requestPermissions()
-            }
-        }
+    /*
+     * Private Methods
+     */
+
+    private fun cleanUp() {
+        rationale = null
+        callback = {}
+        detailedCallback = {}
     }
 
     private fun displayRationale(
@@ -90,21 +108,25 @@ class PermissionController private constructor(
             .show()
     }
 
-    private fun sendPositiveResult() {
-        sendResultAndCleanUp(viewModel.requiredPermissionStrings.associate { it to true })
+    private fun handleResults(results: Map<String, Boolean>) {
+        fragment.get()?.let { fragment ->
+            results.forEach { (permission, isGranted) ->
+                Timber.d(
+                    "The $permission permission has been ${
+                        if (isGranted) {
+                            fragment.getString(PermissionStatus.GRANTED.value)
+                        } else {
+                            fragment.getString(PermissionStatus.DENIED.value)
+                        }
+                    }"
+                )
+            }
+            updateMissingRequiredList()
+        }
     }
 
-    private fun sendResultAndCleanUp(grantResults: Map<String, Boolean>) {
-        callback(grantResults.all { it.value })
-        detailedCallback(grantResults)
-        cleanUp()
-    }
-
-    private fun cleanUp() {
-        rationale = null
-        callback = {}
-        detailedCallback = {}
-    }
+    private fun hasPermissions(context: Context, permissions: ArrayList<String>) =
+        permissions.all { context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
 
     private fun requestPermissions(permission: PermissionModel? = null) {
         permissionCheck?.launch(
@@ -112,8 +134,15 @@ class PermissionController private constructor(
         )
     }
 
-    fun areAllPermissionsGranted(context: Context) =
-        viewModel.requiredPermission.all { it.areGranted(context) }
+    private fun sendPositiveResult() {
+        sendResultAndCleanUp(viewModel.requiredPermissionStrings.associate { it to true })
+    }
+
+    private fun sendResultAndCleanUp(results: Map<String, Boolean>) {
+        callback(results.all { it.value })
+        detailedCallback(results)
+        cleanUp()
+    }
 
     private fun shouldShowPermissionRationale(fragment: Fragment) =
         viewModel.requiredPermission.any { it.requiresRationale(fragment) }
@@ -123,7 +152,4 @@ class PermissionController private constructor(
 
     private fun PermissionModel.requiresRationale(fragment: Fragment) =
         this.permissions.all { fragment.shouldShowRequestPermissionRationale(it) }
-
-    private fun hasPermissions(context: Context, permissions: ArrayList<String>) =
-        permissions.all { context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
 }
