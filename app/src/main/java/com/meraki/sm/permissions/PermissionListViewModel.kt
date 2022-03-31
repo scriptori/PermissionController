@@ -44,10 +44,7 @@ class PermissionListViewModel : ViewModel() {
         PermissionModel(
             "Files and Media",
             R.string.file_and_media_permission_label,
-            permissions = arrayListOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
+            permissions = arrayListOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         )
     )
     val requiredPermission: List<PermissionModel> by lazy {
