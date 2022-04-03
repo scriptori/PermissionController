@@ -1,9 +1,9 @@
-package com.meraki.sm
+package me.scriptori.pc
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.meraki.sm.databinding.MainActivityBinding
-import com.meraki.sm.ui.main.MainFragment
+import me.scriptori.pc.databinding.MainActivityBinding
+import me.scriptori.pc.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { MainActivityBinding.inflate(layoutInflater) }

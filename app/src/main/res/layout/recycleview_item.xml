@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
             android:padding="4dp"
-            android:text="Missing Permission"
+            android:text="@string/missing_permission"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -24,39 +24,27 @@
 
         <TextView
             android:id="@+id/permission_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:padding="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintEnd_toStartOf="@id/permission_status"
-            />
-
-        <TextView
-            android:id="@+id/permission_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:padding="4dp"
-            android:textAlignment="textEnd"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/permission_name"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            />
 
         <Button
             android:id="@+id/enable_permission_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:contentDescription="Enable permission"
+            android:contentDescription="@string/enable_permission"
             android:minWidth="120dp"
             android:padding="4dp"
-            android:text="Enable"
+            android:text="@string/enable"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/permission_status" />
+            app:layout_constraintTop_toBottomOf="@id/permission_name" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

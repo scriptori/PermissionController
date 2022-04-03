@@ -1,4 +1,4 @@
-package com.meraki.sm.ui.recyclerview
+package me.scriptori.pc.ui.recyclerview
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding

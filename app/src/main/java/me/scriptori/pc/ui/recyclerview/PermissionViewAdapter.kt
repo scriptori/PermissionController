@@ -1,10 +1,10 @@
-package com.meraki.sm.ui.recyclerview
+package me.scriptori.pc.ui.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.meraki.sm.databinding.RecycleviewItemBinding
-import com.meraki.sm.permissions.PermissionModel
+import me.scriptori.pc.databinding.RecycleviewItemBinding
+import me.scriptori.pc.permissions.PermissionModel
 import timber.log.Timber
 
 class PermissionViewAdapter(
@@ -23,9 +23,8 @@ class PermissionViewAdapter(
         val permission  = permissions[position]
         holder.binding.apply {
             permissionName.text = root.context.getString(permission.displayLabelId)
-            permissionStatus.text = root.context.getString(permission.status.value)
             enablePermissionButton.setOnClickListener {
-                Timber.d("Enable ${permission.name} invoked!")
+                Timber.d("Enable ${root.context.getString(permission.displayLabelId)} invoked!")
                 callback(permission)
             }
         }

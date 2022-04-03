@@ -2,7 +2,7 @@
     <string name="app_name">Permission Controller</string>
     <string name="dialog_permission_title">Required Permissions</string>
     <string name="dialog_permission_default_message">
-        System Manager requires the following permissions to perform enrollment:\n%1$s
+        Permission Controller requires the following permissions to perform enrollment:\n%1$s
     </string>
     <string name="dialog_permission_button_positive">OK</string>
     <string name="dialog_permission_button_negative">Cancel</string>
@@ -15,6 +15,9 @@
     <string name="file_and_media_permission_label">File and Media permission</string>
     <string name="start_enrollment_button_text">Start Enrollment</string>
     <string name="clear_permissions_button_text">Clear permissions</string>
-    <string name="access_camera_permission_rationale">System Manager needs permission to access the camera</string>
-    <string name="default_permission_rationale">System Manager needs this permission for enrollment.</string>
+    <string name="access_camera_permission_rationale">Permission Controller needs permission to access the camera</string>
+    <string name="default_permission_rationale">Permission Controller needs this permission for enrollment.</string>
+    <string name="missing_permission">Missing Permission</string>
+    <string name="enable_permission">Enable permission</string>
+    <string name="enable">Enable</string>
 </resources>

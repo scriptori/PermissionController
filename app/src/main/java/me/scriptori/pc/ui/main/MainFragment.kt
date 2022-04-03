@@ -1,4 +1,4 @@
-package com.meraki.sm.ui.main
+package me.scriptori.pc.ui.main
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
@@ -9,12 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.meraki.sm.databinding.MainFragmentBinding
-import com.meraki.sm.permissions.PermissionController
-import com.meraki.sm.permissions.PermissionListViewModel
-import com.meraki.sm.ui.recyclerview.PermissionViewAdapter
+import me.scriptori.pc.databinding.MainFragmentBinding
+import me.scriptori.pc.permissions.PermissionController
+import me.scriptori.pc.permissions.PermissionListViewModel
+import me.scriptori.pc.ui.recyclerview.PermissionViewAdapter
 
 class MainFragment : Fragment() {
     companion object {
@@ -32,7 +31,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Start observing the permission list view model
-        permissionListViewModel.permissionList.observe(viewLifecycleOwner, Observer { updateData() })
+        permissionListViewModel.permissionList.observe(viewLifecycleOwner) { updateData() }
 
         binding.apply {
             permissionRecyclerView.also { rv ->
@@ -51,23 +50,22 @@ class MainFragment : Fragment() {
             }
         }
 
-        permissionController.checkPermissions()
-        permissionController.updateMissingRequiredList()
+        permissionController.checkPermissions(binding.root.context)
+        permissionController.updateMissingRequiredList(binding.root.context)
     }
 
     override fun onResume() {
         super.onResume()
-        permissionController.updateMissingRequiredList()
+        permissionController.updateMissingRequiredList(binding.root.context)
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun updateData() {
         adapter.apply {
-            permissionController.updateRequiredPermissionsStatus()
             permissions.clear()
-            permissions.addAll(permissionListViewModel.getDeniedPermissions())
+            permissions.addAll(permissionController.getDeniedPermissions(binding.root.context))
             notifyDataSetChanged()
         }
-        binding.startEnrollment.isEnabled = permissionController.areAllPermissionsGranted(requireContext())
+        binding.startEnrollment.isEnabled = permissionController.areAllPermissionsGranted(binding.root.context)
     }
 }

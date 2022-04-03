@@ -1,4 +1,4 @@
-package com.meraki.sm
+package me.scriptori.pc
 
 import android.app.Application
 import timber.log.Timber
